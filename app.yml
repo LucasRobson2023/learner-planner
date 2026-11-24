@@ -1,0 +1,8 @@
+command:
+  - npm
+  - run
+  - start
+
+env:
+  - name: AGENT_ENDPOINT_NAME
+    value: "your-agent-endpoint-name"

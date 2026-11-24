@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Databricks Agent Portal</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 3rem auto; padding: 0 1rem; }
+    #chat { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; height: 320px; overflow-y: auto; margin-bottom: 1rem; }
+    .msg { margin-bottom: 0.75rem; }
+    form { display: flex; gap: 0.5rem; }
+    input { flex: 1; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; }
+    button { padding: 0.6rem 1.2rem; background: #ff3621; color: white; border: none; border-radius: 6px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>Databricks Agent Portal</h2>
+  <div id="chat"></div>
+  <form id="form">
+    <input id="input" placeholder="Ask your Databricks agent..." required />
+    <button type="submit">Send</button>
+  </form>
+
+  <script>
+    const chat = document.getElementById('chat');
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+
+    function append(sender, text) {
+      const div = document.createElement('div');
+      div.className = 'msg';
+      div.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const message = input.value.trim();
+      if (!message) return;
+      append('You', message);
+      input.value = '';
+
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      });
+      const data = await res.json();
+      append('Agent', data.reply);
+    });
+  </script>
+</body>
+</html>
